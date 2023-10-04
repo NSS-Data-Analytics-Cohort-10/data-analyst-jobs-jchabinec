@@ -67,22 +67,26 @@ WHERE location='CA';
 
 SELECT company, SUM(review_count) AS total_reviews, AVG(star_rating) AS avg_rating
 FROM data_analyst_jobs
-WHERE company IS NOT NULL
-GROUP BY company
-HAVING SUM(review_count)>5000;
+WHERE company IS NOT NULL AND review_count>5000
+GROUP BY company;
 
---Answer: 70 (71 if you remove the WHERE clause)
+--Answer: 40 (41 if you remove the WHERE clause)
 
 -- 10.	Add the code to order the query in #9 from highest to lowest average star rating. Which company with more than 5000 reviews across all locations in the dataset has the highest star rating? What is that rating?
 
-SELECT company, SUM(review_count) AS total_reviews, AVG(star_rating) AS avg_rating
+SELECT company, AVG(star_rating) AS avg_rating
 FROM data_analyst_jobs
-WHERE company IS NOT NULL
+WHERE company IS NOT NULL AND review_count>5000
 GROUP BY company
-HAVING SUM(review_count)>5000
 ORDER BY avg_rating DESC;
 
---Answer: Google, with an averaget star rating of ~4.3
+--Answer: Six companies, all with an average star rating of ~4.2:
+--        #1	Unilever
+--        #2	General Motors
+--        #3	Nike
+--        #4	American Express
+--        #5	Microsoft
+--        #6	Kaiser Permanente
 
 -- 11.	Find all the job titles that contain the word ‘Analyst’. How many different job titles are there?
 
@@ -104,6 +108,18 @@ WHERE title NOT ILIKE '%Analyst%' OR title NOT ILIKE '%Analytics%';
 -- You want to understand which jobs requiring SQL are hard to fill. Find the number of jobs by industry (domain) that require SQL and have been posted longer than 3 weeks. 
 --  - Disregard any postings where the domain is NULL. 
 --  - Order your results so that the domain with the greatest number of `hard to fill` jobs is at the top. 
---   - Which three industries are in the top 4 on this list? How many jobs have been listed for more than 3 weeks for each of the top 4?
+--   - Which four industries are in the top 4 on this list? How many jobs have been listed for more than 3 weeks for each of the top 4?
+
+
+SELECT domain, COUNT(skill) AS hard_to_fill_jobs
+FROM data_analyst_jobs
+WHERE domain IS NOT NULL AND skill LIKE '%SQL%' AND days_since_posting>21
+GROUP BY domain
+ORDER BY hard_to_fill_jobs DESC
+LIMIT 4;
 
 --Answer:
+--       #1	Internet & Software:			62 "hard to fill" jobs
+--       #2	Banks & Financial Services:		61 "hard to fill" jobs
+--       #3	Consulting & Business Services:	57 "hard to fill" jobs
+--       #4	Health Care:					52 "hard to fill" jobs
