@@ -65,31 +65,40 @@ WHERE location='CA';
 
 -- 9.	Find the name of each company and its average star rating for all companies that have more than 5000 reviews across all locations. How many companies are there with more that 5000 reviews across all locations?
 
-SELECT company, SUM(review_count) AS reviews, AVG(star_rating) AS avgerage_rating
+SELECT company, SUM(review_count) AS total_reviews, AVG(star_rating) AS avg_rating
 FROM data_analyst_jobs
-WHERE reviews>5000
+WHERE company IS NOT NULL
 GROUP BY company
-ORDER BY reviews DESC;
+HAVING SUM(review_count)>5000;
 
---Answer: 1089
+--Answer: 70 (71 if you remove the WHERE clause)
 
 -- 10.	Add the code to order the query in #9 from highest to lowest average star rating. Which company with more than 5000 reviews across all locations in the dataset has the highest star rating? What is that rating?
 
+SELECT company, SUM(review_count) AS total_reviews, AVG(star_rating) AS avg_rating
+FROM data_analyst_jobs
+WHERE company IS NOT NULL
+GROUP BY company
+HAVING SUM(review_count)>5000
+ORDER BY avg_rating DESC;
 
-
---Answer:
+--Answer: Google, with an averaget star rating of ~4.3
 
 -- 11.	Find all the job titles that contain the word ‘Analyst’. How many different job titles are there?
 
+SELECT DISTINCT title
+FROM data_analyst_jobs
+WHERE title ILIKE '%Analyst%';
 
-
---Answer:
+--Answer: 774 (Googled how to make the LIKE operator not case sensitive, as I noticed in question 12 that NOT LIKE 'Analyst' still showed a job title with 'ANALYST')
 
 -- 12.	How many different job titles do not contain either the word ‘Analyst’ or the word ‘Analytics’? What word do these positions have in common?
 
+SELECT DISTINCT title
+FROM data_analyst_jobs
+WHERE title NOT ILIKE '%Analyst%' OR title NOT ILIKE '%Analytics%';
 
-
---Answer:
+--Answer: 801 (See Question 11 - LIKE is case sensitive, where ILIKE is not)
 
 -- **BONUS:**
 -- You want to understand which jobs requiring SQL are hard to fill. Find the number of jobs by industry (domain) that require SQL and have been posted longer than 3 weeks. 
